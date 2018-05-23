@@ -31,17 +31,18 @@ RUN apt-get update \
     libtidy-dev \
     && rm -r /var/lib/apt/lists/*
 
-# Install Oracle Instantclient
-RUN mkdir /opt/oracle \
-    && cd /opt/oracle \
-    && wget https://s3.amazonaws.com/merofile/instantclient-basic-linux.x64-12.1.0.2.0.zip \
-    && wget https://s3.amazonaws.com/merofile/instantclient-sdk-linux.x64-12.1.0.2.0.zip \
-    && unzip /opt/oracle/instantclient-basic-linux.x64-12.1.0.2.0.zip -d /opt/oracle \
-    && unzip /opt/oracle/instantclient-sdk-linux.x64-12.1.0.2.0.zip -d /opt/oracle \
-    && ln -s /opt/oracle/instantclient_12_1/libclntsh.so.12.1 /opt/oracle/instantclient_12_1/libclntsh.so \
-    && ln -s /opt/oracle/instantclient_12_1/libclntshcore.so.12.1 /opt/oracle/instantclient_12_1/libclntshcore.so \
-    && ln -s /opt/oracle/instantclient_12_1/libocci.so.12.1 /opt/oracle/instantclient_12_1/libocci.so \
-    && rm -rf /opt/oracle/*.zip
+# Install the Oracle Instant Client
+ADD oracle/oracle-instantclient12.1-basic_12.1.0.2.0-2_amd64.deb /tmp
+ADD oracle/oracle-instantclient12.1-devel_12.1.0.2.0-2_amd64.deb /tmp
+ADD oracle/oracle-instantclient12.1-sqlplus_12.1.0.2.0-2_amd64.deb /tmp
+RUN dpkg -i /tmp/oracle-instantclient12.1-basic_12.1.0.2.0-2_amd64.deb
+RUN dpkg -i /tmp/oracle-instantclient12.1-devel_12.1.0.2.0-2_amd64.deb
+RUN dpkg -i /tmp/oracle-instantclient12.1-sqlplus_12.1.0.2.0-2_amd64.deb
+RUN rm -rf /tmp/oracle-instantclient12.1-*.deb
+
+# Set up the Oracle environment variables
+ENV LD_LIBRARY_PATH /usr/lib/oracle/12.1/client64/lib/
+ENV ORACLE_HOME /usr/lib/oracle/12.1/client64/lib/
 
 RUN pecl channel-update pecl.php.net
 
