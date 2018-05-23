@@ -47,6 +47,7 @@ RUN pecl channel-update pecl.php.net
 
 RUN docker-php-ext-install -j$(nproc) bcmath
 RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/lib/x86_64-linux-gnu/libjpeg.so
+RUN echo 'instantclient,/opt/oracle/instantclient_12_1/' | pecl install oci8
 RUN docker-php-ext-configure pdo_oci --with-pdo-oci=instantclient,/opt/oracle/instantclient_12_2,12.2
 RUN docker-php-ext-install -j$(nproc) gd
 RUN docker-php-ext-install -j$(nproc) intl
@@ -64,8 +65,8 @@ RUN docker-php-ext-install -j$(nproc) zip
 RUN docker-php-ext-install -j$(nproc) soap
 RUN pecl install xdebug
 RUN pecl install mongodb
-RUN pecl install oci8
 RUN docker-php-ext-enable mongodb
+RUN docker-php-ext-enable oci8
 
 RUN curl -LsS http://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
 RUN curl -LsS http://symfony.com/installer -o /usr/local/bin/symfony && chmod a+x /usr/local/bin/symfony
