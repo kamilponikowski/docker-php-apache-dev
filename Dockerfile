@@ -39,9 +39,13 @@ RUN mkdir /opt/oracle \
     && unzip /opt/oracle/instantclient-basic-linux.x64-12.2.0.1.0.zip -d /opt/oracle \
     && unzip /opt/oracle/instantclient-sdk-linux.x64-12.2.0.1.0.zip -d /opt/oracle \
     && ln -s /opt/oracle/instantclient_12_2/libclntsh.so.12.2 /opt/oracle/instantclient_12_2/libclntsh.so \
+    && ln -s /opt/oracle/instantclient_12_2/libclntshcore.so.12.2 /opt/oracle/instantclient_12_2/libclntshcore.so \
+    && ln -s /opt/oracle/instantclient_12_2/libocci.so.12.2 /opt/oracle/instantclient_12_2/libocci.so \
     && rm -rf /opt/oracle/*.zip
 
 RUN pecl channel-update pecl.php.net
+
+RUN pecl install oci8
 
 RUN docker-php-ext-install -j$(nproc) bcmath
 RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/lib/x86_64-linux-gnu/libjpeg.so
@@ -62,7 +66,6 @@ RUN docker-php-ext-install -j$(nproc) zip
 RUN docker-php-ext-install -j$(nproc) soap
 RUN pecl install xdebug
 RUN pecl install mongodb
-RUN pecl install oci8
 RUN docker-php-ext-enable mongodb
 
 RUN curl -LsS http://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
