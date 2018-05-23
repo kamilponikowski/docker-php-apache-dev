@@ -43,7 +43,7 @@ RUN docker-php-ext-install -j$(nproc) opcache
 RUN docker-php-ext-install -j$(nproc) pcntl
 RUN docker-php-ext-install -j$(nproc) pdo_mysql
 RUN docker-php-ext-install -j$(nproc) pdo_pgsql
-RUN docker-php-ext-install -j$(nproc) pdo_oci
+RUN docker-php-ext-install -j$(nproc) pdo_oci --with-pdo-oci=instantclient,/opt/oracle/instantclient_12_1,12.1 \
 RUN docker-php-ext-install -j$(nproc) oci8
 RUN docker-php-ext-install -j$(nproc) sockets
 RUN docker-php-ext-install -j$(nproc) zip
