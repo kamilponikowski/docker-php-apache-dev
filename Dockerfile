@@ -31,7 +31,10 @@ RUN apt-get update \
     libtidy-dev \
     && rm -r /var/lib/apt/lists/*
 
-RUN docker -ti --rm container-registry.oracle.com/database/instantclient sqlplus hr/welcome@example.com/pdborcl
+unzip /oracle/instantclient-basic-linux.x64-12.1.0.1.0.zip
+unzip /oracle/instantclient-sdk-linux.x64-12.1.0.1.0.zip
+cd instantclient_12_1
+ln -s libclntsh.so.12.1 libclntsh.so
 
 RUN pecl channel-update pecl.php.net
 
