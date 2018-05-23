@@ -38,7 +38,7 @@ RUN mkdir /opt/oracle \
     && wget https://ws.moleo.pl/oracle/instantclient-sdk-linux.x64-12.2.0.2.0.zip \
     && unzip /opt/oracle/instantclient-basic-linux.x64-12.2.0.1.0.zip -d /opt/oracle \
     && unzip /opt/oracle/instantclient-sdk-linux.x64-12.2.0.1.0.zip -d /opt/oracle \
-    && ln -s /opt/oracle/instantclient_12_2/libclntsh.so.12.2 /opt/oracle/instantclient_12_2/libclntsh.so
+    && ln -s /opt/oracle/instantclient_12_2/libclntsh.so.12.2 /opt/oracle/instantclient_12_2/libclntsh.so \
     && rm -rf /opt/oracle/*.zip
 
 RUN pecl channel-update pecl.php.net
