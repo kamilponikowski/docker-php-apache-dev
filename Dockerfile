@@ -20,6 +20,7 @@ RUN apt-get update \
     cron \
     nano \
     htop \
+    unzip \
     libicu-dev \
     libmcrypt-dev \
     libpq-dev \
@@ -41,7 +42,7 @@ RUN mkdir /opt/oracle \
     && ln -s /opt/oracle/instantclient_12_1/libclntshcore.so.12.1 /opt/oracle/instantclient_12_1/libclntshcore.so \
     && ln -s /opt/oracle/instantclient_12_1/libocci.so.12.1 /opt/oracle/instantclient_12_1/libocci.so \
     && rm -rf /opt/oracle/*.zip
-    
+
 RUN pecl channel-update pecl.php.net
 
 RUN docker-php-ext-install -j$(nproc) bcmath
