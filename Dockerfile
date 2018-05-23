@@ -31,16 +31,23 @@ RUN apt-get update \
     libtidy-dev \
     && rm -r /var/lib/apt/lists/*
 
-unzip /oracle/instantclient-basic-linux.x64-12.1.0.1.0.zip
-unzip /oracle/instantclient-sdk-linux.x64-12.1.0.1.0.zip
-cd instantclient_12_1
-ln -s libclntsh.so.12.1 libclntsh.so
+# Install Oracle Instantclient
+RUN mkdir /opt/oracle \
+    && cd /opt/oracle \
+    && wget https://ws.moleo.pl/oracle/instantclient-basic-linux.x64-12.2.0.2.0.zip \
+    && wget https://ws.moleo.pl/oracle/instantclient-sdk-linux.x64-12.2.0.2.0.zip \
+    && unzip /opt/oracle/instantclient-basic-linux.x64-12.2.0.1.0.zip -d /opt/oracle \
+    && unzip /opt/oracle/instantclient-sdk-linux.x64-12.2.0.1.0.zip -d /opt/oracle \
+    && ln -s /opt/oracle/instantclient_12_2/libclntsh.so.12.2 /opt/oracle/instantclient_12_2/libclntsh.so \
+    && ln -s /opt/oracle/instantclient_12_2/libclntshcore.so.12.2 /opt/oracle/instantclient_12_2/libclntshcore.so \
+    && ln -s /opt/oracle/instantclient_12_2/libocci.so.12.2 /opt/oracle/instantclient_12_2/libocci.so \
+    && rm -rf /opt/oracle/*.zip
 
 RUN pecl channel-update pecl.php.net
 
 RUN docker-php-ext-install -j$(nproc) bcmath
 RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/lib/x86_64-linux-gnu/libjpeg.so
-RUN docker-php-ext-configure pdo_oci --with-pdo-oci=instantclient,/opt/oracle/instantclient_12_1,12.1 \
+RUN docker-php-ext-configure pdo_oci --with-pdo-oci=instantclient,/opt/oracle/instantclient_12_2,12.2 \
 RUN docker-php-ext-install -j$(nproc) gd
 RUN docker-php-ext-install -j$(nproc) intl
 RUN docker-php-ext-install -j$(nproc) mbstring
