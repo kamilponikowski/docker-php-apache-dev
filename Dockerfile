@@ -34,8 +34,8 @@ RUN apt-get update \
 # Install Oracle Instantclient
 RUN mkdir /opt/oracle \
     && cd /opt/oracle \
-    && wget https://ws.moleo.pl/oracle/instantclient-basic-linux.x64-12.2.0.2.0.zip \
-    && wget https://ws.moleo.pl/oracle/instantclient-sdk-linux.x64-12.2.0.2.0.zip \
+    && wget https://ws.moleo.pl/oracle/instantclient-basic-linux.x64-12.2.0.1.0.zip \
+    && wget https://ws.moleo.pl/oracle/instantclient-sdk-linux.x64-12.2.0.1.0.zip \
     && unzip /opt/oracle/instantclient-basic-linux.x64-12.2.0.1.0.zip -d /opt/oracle \
     && unzip /opt/oracle/instantclient-sdk-linux.x64-12.2.0.1.0.zip -d /opt/oracle \
     && ln -s /opt/oracle/instantclient_12_2/libclntsh.so.12.2 /opt/oracle/instantclient_12_2/libclntsh.so \
@@ -62,6 +62,7 @@ RUN docker-php-ext-install -j$(nproc) zip
 RUN docker-php-ext-install -j$(nproc) soap
 RUN pecl install xdebug
 RUN pecl install mongodb
+RUN pecl install oci8
 RUN docker-php-ext-enable mongodb
 
 RUN curl -LsS http://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
