@@ -1,4 +1,4 @@
-FROM php:7.2-apache
+FROM php:7.1-apache
 
 ARG DEV_USER_UID=1000
 
@@ -28,6 +28,8 @@ RUN apt-get update \
     libfreetype6-dev \
     libxslt-dev \
     libtidy-dev \
+    libaio-dev \
+    python-pyodbc \
     && rm -r /var/lib/apt/lists/*
 
 RUN pecl channel-update pecl.php.net
@@ -84,34 +86,31 @@ RUN a2enmod rewrite && a2enmod vhost_alias && a2enconf vhost-alias
 # Install Oracle Instantclient
 RUN mkdir -p /opt/oracle
 RUN cd /opt/oracle
-RUN wget https://ws.moleo.pl/oracle/instantclient-basic-linux.x64-12.2.0.1.0.zip -O /opt/oracle/instantclient-basic-linux.x64-12.2.0.1.0.zip
-RUN wget https://ws.moleo.pl/oracle/instantclient-sdk-linux.x64-12.2.0.1.0.zip -O /opt/oracle/instantclient-sdk-linux.x64-12.2.0.1.0.zip
-RUN unzip /opt/oracle/instantclient-basic-linux.x64-12.2.0.1.0.zip -d /opt/oracle
-RUN unzip /opt/oracle/instantclient-sdk-linux.x64-12.2.0.1.0.zip -d /opt/oracle
-RUN ln -s /opt/oracle/instantclient_12_2/libclntsh.so.12.1 /opt/oracle/instantclient_12_2/libclntsh.so
-RUN ln -s /opt/oracle/instantclient_12_2/libclntshcore.so.12.1 /opt/oracle/instantclient_12_2/libclntshcore.so
-RUN ln -s /opt/oracle/instantclient_12_2/libocci.so.12.1 /opt/oracle/instantclient_12_2/libocci.so
+RUN wget https://ws.moleo.pl/oracle/instantclient-basic-linux.x64-12.1.0.2.0.zip -O /opt/oracle/instantclient-basic-linux.x64-12.1.0.2.0.zip
+RUN wget https://ws.moleo.pl/oracle/instantclient-sqlplus-linux.x64-12.1.0.2.0.zip -O /opt/oracle/instantclient-sqlplus-linux.x64-12.1.0.2.0.zip
+RUN wget https://ws.moleo.pl/oracle/instantclient-sdk-linux.x64-12.1.0.2.0.zip -O /opt/oracle/instantclient-sdk-linux.x64-12.1.0.2.0.zip
+RUN unzip /opt/oracle/instantclient-basic-linux.x64-12.1.0.2.0.zip -d /opt/oracle
+RUN unzip /opt/oracle/instantclient-sqlplus-linux.x64-12.1.0.2.0.zip -d /opt/oracle
+RUN unzip /opt/oracle/instantclient-sdk-linux.x64-12.1.0.2.0.zip -d /opt/oracle
+RUN ln -s /opt/oracle/instantclient_12_1/libclntsh.so.12.1 /opt/oracle/instantclient_12_1/libclntsh.so
+RUN ln -s /opt/oracle/instantclient_12_1/libclntshcore.so.12.1 /opt/oracle/instantclient_12_1/libclntshcore.so
+RUN ln -s /opt/oracle/instantclient_12_1/libocci.so.12.1 /opt/oracle/instantclient_12_1/libocci.so
 RUN rm -rf /opt/oracle/*.zip
 
-RUN docker-php-ext-configure pdo_oci --with-pdo-oci=instantclient,/opt/oracle/instantclient_12_2,12.1
-RUN docker-php-ext-configure oci8 --with-oci8=instantclient,/opt/oracle/instantclient_12_2,12.2
+# Set up the Oracle environment variables
+ENV LD_LIBRARY_PATH /opt/oracle/instantclient_12_1/
+ENV ORACLE_HOME /opt/oracle/instantclient_12_1/
+
+RUN docker-php-ext-configure pdo_oci --with-pdo-oci=instantclient,/opt/oracle/instantclient_12_1,12.1
+RUN docker-php-ext-configure oci8 --with-oci8=instantclient,/opt/oracle/instantclient_12_1,12.1
 
 RUN docker-php-ext-install -j$(nproc) pdo_oci
 
-# Set up the Oracle environment variables
-ENV LD_LIBRARY_PATH /opt/oracle/instantclient_12_2/
-ENV ORACLE_HOME /opt/oracle/instantclient_12_2/
-
-RUN echo 'instantclient,/opt/oracle/instantclient_12_2/' | pecl install oci8
-#RUN docker-php-ext-install -j$(nproc) pdo_oci
-
-# Set up the Oracle environment variables
-#ENV LD_LIBRARY_PATH /usr/lib/oracle/12.1/client64/lib/
-#ENV ORACLE_HOME /usr/lib/oracle/12.1/client64/lib/
+RUN echo 'instantclient,/opt/oracle/instantclient_12_1/' | pecl install oci8
 
 # Install the OCI8 PHP extension
 #RUN echo 'instantclient,/opt/oracle/instantclient_12_2/lib' | pecl install -f oci8-2.0.8
-#RUN echo "extension=oci8.so" > /etc/php5/apache2/conf.d/30-oci8.ini
+#RUN echo "extension=oci8.so" > /usr/local/etc/php/conf.d/30-oci8.ini
 
 USER dev
 
