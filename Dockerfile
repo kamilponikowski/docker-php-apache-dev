@@ -32,21 +32,6 @@ RUN apt-get update \
 
 RUN pecl channel-update pecl.php.net
 
-# Install Oracle Instantclient
-RUN mkdir -p /opt/oracle
-RUN cd /opt/oracle
-RUN wget https://ws.moleo.pl/oracle/instantclient-basic-linux.x64-12.2.0.1.0.zip
-RUN wget https://ws.moleo.pl/oracle/instantclient-sdk-linux.x64-12.2.0.1.0.zip
-# RUN unzip /opt/oracle/instantclient-basic-linux.x64-12.2.0.1.0.zip -d /opt/oracle
-# RUN unzip /opt/oracle/instantclient-sdk-linux.x64-12.2.0.1.0.zip -d /opt/oracle
-#    && ln -s /opt/oracle/instantclient_12_2/libclntsh.so.12.2 /opt/oracle/instantclient_12_2/libclntsh.so \
-#    && ln -s /opt/oracle/instantclient_12_2/libclntshcore.so.12.2 /opt/oracle/instantclient_12_2/libclntshcore.so \
-#    && ln -s /opt/oracle/instantclient_12_2/libocci.so.12.2 /opt/oracle/instantclient_12_2/libocci.so \
-#    && rm -rf /opt/oracle/*.zip
-
-#RUN docker-php-ext-configure pdo_oci --with-pdo-oci=instantclient,/opt/oracle/instantclient_12_2,12.2
-#RUN docker-php-ext-configure oci8 --with-oci8=instantclient,/opt/oracle/instantclient_12_2,12.2
-
 RUN docker-php-ext-install -j$(nproc) bcmath
 RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/lib/x86_64-linux-gnu/libjpeg.so
 RUN docker-php-ext-install -j$(nproc) gd
@@ -95,6 +80,33 @@ RUN adduser --disabled-password --gecos '' --uid ${DEV_USER_UID} dev \
 RUN chown -R dev:dev /var/lock/apache2 /var/log/apache2
 
 RUN a2enmod rewrite && a2enmod vhost_alias && a2enconf vhost-alias
+
+# Install Oracle Instantclient
+RUN mkdir -p /opt/oracle
+RUN cd /opt/oracle
+RUN wget https://ws.moleo.pl/oracle/instantclient-basic-linux.x64-12.2.0.1.0.zip -O /opt/oracle/instantclient-basic-linux.x64-12.2.0.1.0.zip
+RUN wget https://ws.moleo.pl/oracle/instantclient-sdk-linux.x64-12.2.0.1.0.zip -O /opt/oracle/instantclient-sdk-linux.x64-12.2.0.1.0.zip
+RUN unzip /opt/oracle/instantclient-basic-linux.x64-12.2.0.1.0.zip -d /opt/oracle
+RUN unzip /opt/oracle/instantclient-sdk-linux.x64-12.2.0.1.0.zip -d /opt/oracle
+RUN ln -s /opt/oracle/instantclient_12_2/libclntsh.so.12.1 /opt/oracle/instantclient_12_2/libclntsh.so
+RUN ln -s /opt/oracle/instantclient_12_2/libclntshcore.so.12.1 /opt/oracle/instantclient_12_2/libclntshcore.so
+RUN ln -s /opt/oracle/instantclient_12_2/libocci.so.12.1 /opt/oracle/instantclient_12_2/libocci.so
+RUN rm -rf /opt/oracle/*.zip
+
+RUN docker-php-ext-configure pdo_oci --with-pdo-oci=instantclient,/opt/oracle/instantclient_12_2,12.1
+RUN docker-php-ext-configure oci8 --with-oci8=instantclient,/opt/oracle/instantclient_12_2,12.2
+
+RUN docker-php-ext-install -j$(nproc) pdo_oci
+RUN echo 'instantclient,/opt/oracle/instantclient_12_2/' | pecl install oci8
+#RUN docker-php-ext-install -j$(nproc) pdo_oci
+
+# Set up the Oracle environment variables
+#ENV LD_LIBRARY_PATH /usr/lib/oracle/12.1/client64/lib/
+#ENV ORACLE_HOME /usr/lib/oracle/12.1/client64/lib/
+
+# Install the OCI8 PHP extension
+#RUN echo 'instantclient,/opt/oracle/instantclient_12_2/lib' | pecl install -f oci8-2.0.8
+#RUN echo "extension=oci8.so" > /etc/php5/apache2/conf.d/30-oci8.ini
 
 USER dev
 
