@@ -20,7 +20,6 @@ RUN apt-get update \
     cron \
     nano \
     htop \
-    unzip \
     libicu-dev \
     libmcrypt-dev \
     libpq-dev \
@@ -31,24 +30,10 @@ RUN apt-get update \
     libtidy-dev \
     && rm -r /var/lib/apt/lists/*
 
-# Install Oracle Instantclient
-RUN mkdir /opt/oracle \
-    && cd /opt/oracle \
-    && wget https://ws.moleo.pl/oracle/instantclient-basic-linux.x64-12.2.0.1.0.zip \
-    && wget https://ws.moleo.pl/oracle/instantclient-sdk-linux.x64-12.2.0.1.0.zip \
-    && unzip /opt/oracle/instantclient-basic-linux.x64-12.2.0.1.0.zip -d /opt/oracle \
-    && unzip /opt/oracle/instantclient-sdk-linux.x64-12.2.0.1.0.zip -d /opt/oracle \
-    && ln -s /opt/oracle/instantclient_12_2/libclntsh.so.12.2 /opt/oracle/instantclient_12_2/libclntsh.so \
-    && ln -s /opt/oracle/instantclient_12_2/libclntshcore.so.12.2 /opt/oracle/instantclient_12_2/libclntshcore.so \
-    && ln -s /opt/oracle/instantclient_12_2/libocci.so.12.2 /opt/oracle/instantclient_12_2/libocci.so \
-    && rm -rf /opt/oracle/*.zip
-
 RUN pecl channel-update pecl.php.net
 
 RUN docker-php-ext-install -j$(nproc) bcmath
 RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/lib/x86_64-linux-gnu/libjpeg.so
-#RUN echo 'instantclient,/opt/oracle/instantclient_12_2/' | pecl install oci8
-RUN docker-php-ext-configure pdo_oci --with-pdo-oci=instantclient,/opt/oracle/instantclient_12_2,12.2
 RUN docker-php-ext-install -j$(nproc) gd
 RUN docker-php-ext-install -j$(nproc) intl
 RUN docker-php-ext-install -j$(nproc) mbstring
@@ -58,15 +43,12 @@ RUN docker-php-ext-install -j$(nproc) opcache
 RUN docker-php-ext-install -j$(nproc) pcntl
 RUN docker-php-ext-install -j$(nproc) pdo_mysql
 RUN docker-php-ext-install -j$(nproc) pdo_pgsql
-#RUN docker-php-ext-install -j$(nproc) pdo_oci
-#RUN docker-php-ext-install -j$(nproc) oci8
 RUN docker-php-ext-install -j$(nproc) sockets
 RUN docker-php-ext-install -j$(nproc) zip
 RUN docker-php-ext-install -j$(nproc) soap
 RUN pecl install xdebug
 RUN pecl install mongodb
 RUN docker-php-ext-enable mongodb
-#RUN docker-php-ext-enable oci8
 
 RUN curl -LsS http://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
 RUN curl -LsS http://symfony.com/installer -o /usr/local/bin/symfony && chmod a+x /usr/local/bin/symfony
