@@ -47,9 +47,9 @@ RUN pecl channel-update pecl.php.net
 
 # Install Oracle extensions
 RUN docker-php-ext-configure pdo_oci --with-pdo-oci=instantclient,/opt/oracle/instantclient_12_2,12.2 \
-    && printf "instantclient,/opt/oracle/instantclient_12_2/" | pecl install oci8 \
-    && docker-php-ext-install pdo_oci \
-    && docker-php-ext-enable oci8
+RUN printf "instantclient,/opt/oracle/instantclient_12_2/" | pecl install oci8 \
+RUN docker-php-ext-install pdo_oci \
+RUN docker-php-ext-enable oci8
 
 RUN docker-php-ext-install -j$(nproc) bcmath
 # RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/lib/x86_64-linux-gnu/libjpeg.so
