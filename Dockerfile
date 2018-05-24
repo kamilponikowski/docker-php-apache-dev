@@ -97,6 +97,11 @@ RUN docker-php-ext-configure pdo_oci --with-pdo-oci=instantclient,/opt/oracle/in
 RUN docker-php-ext-configure oci8 --with-oci8=instantclient,/opt/oracle/instantclient_12_2,12.2
 
 RUN docker-php-ext-install -j$(nproc) pdo_oci
+
+# Set up the Oracle environment variables
+ENV LD_LIBRARY_PATH /opt/oracle/instantclient_12_2/
+ENV ORACLE_HOME /opt/oracle/instantclient_12_2/
+
 RUN echo 'instantclient,/opt/oracle/instantclient_12_2/' | pecl install oci8
 #RUN docker-php-ext-install -j$(nproc) pdo_oci
 
