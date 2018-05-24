@@ -1,9 +1,8 @@
-FROM php:7.1-apache
+FROM php:7.2-apache
 
 ARG DEV_USER_UID=1000
 
 ARG PHING2_VERSION=2.16.0
-ARG PHPUNIT5_VERSION=5.7
 ARG PHPUNIT6_VERSION=6.5
 ARG PHPUNIT7_VERSION=7.0
 
@@ -23,7 +22,7 @@ RUN apt-get update \
     libicu-dev \
     libmcrypt-dev \
     libpq-dev \
-    libpng12-dev \
+#    libpng12-dev \
     libjpeg62-turbo-dev \
     libfreetype6-dev \
     libxslt-dev \
@@ -37,7 +36,7 @@ RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-di
 RUN docker-php-ext-install -j$(nproc) gd
 RUN docker-php-ext-install -j$(nproc) intl
 RUN docker-php-ext-install -j$(nproc) mbstring
-RUN docker-php-ext-install -j$(nproc) mcrypt
+#RUN docker-php-ext-install -j$(nproc) mcrypt
 RUN docker-php-ext-install -j$(nproc) mysqli
 RUN docker-php-ext-install -j$(nproc) opcache
 RUN docker-php-ext-install -j$(nproc) pcntl
@@ -61,11 +60,10 @@ RUN curl -LsS http://www.phing.info/get/phing-${PHING2_VERSION}.phar -o /usr/loc
 
 RUN curl -LsS http://deployer.org/deployer.phar -o /usr/local/bin/dep && chmod +x /usr/local/bin/dep
 
-RUN curl -LsS http://phar.phpunit.de/phpunit-${PHPUNIT5_VERSION}.phar -o /usr/local/bin/phpunit5 && chmod +x /usr/local/bin/phpunit5
 RUN curl -LsS http://phar.phpunit.de/phpunit-${PHPUNIT6_VERSION}.phar -o /usr/local/bin/phpunit6 && chmod +x /usr/local/bin/phpunit6
 RUN curl -LsS http://phar.phpunit.de/phpunit-${PHPUNIT7_VERSION}.phar -o /usr/local/bin/phpunit7 && chmod +x /usr/local/bin/phpunit7
 
-RUN ln -s /usr/local/bin/phpunit5 /usr/local/bin/phpunit
+RUN ln -s /usr/local/bin/phpunit6 /usr/local/bin/phpunit
 
 RUN printf "alias l='ls -CF'\nalias la='ls -A'\nalias ll='ls -alF'\n" >> /etc/bash.bashrc
 RUN printf "if [ -d \"\$HOME/.composer/vendor/bin\" ]; then\n    PATH=\"\$HOME/.composer/vendor/bin:\$PATH\"\nfi\n" >> /etc/bash.bashrc
