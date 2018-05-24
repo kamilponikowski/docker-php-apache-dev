@@ -35,8 +35,8 @@ RUN pecl channel-update pecl.php.net
 # Install Oracle Instantclient
 RUN mkdir -p /opt
 RUN cd /opt
-RUN mkdir -p /oracle
-RUN cd /oracle
+RUN mkdir -p oracle
+RUN cd oracle
 RUN wget https://ws.moleo.pl/oracle/instantclient-basic-linux.x64-12.2.0.1.0.zip
 RUN wget https://ws.moleo.pl/oracle/instantclient-sdk-linux.x64-12.2.0.1.0.zip
 # RUN unzip /opt/oracle/instantclient-basic-linux.x64-12.2.0.1.0.zip -d /opt/oracle
