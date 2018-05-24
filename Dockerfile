@@ -19,6 +19,7 @@ RUN apt-get update \
     cron \
     nano \
     htop \
+    unzip \
     libicu-dev \
     libmcrypt-dev \
     libpq-dev \
