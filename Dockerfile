@@ -33,12 +33,14 @@ RUN apt-get update \
 RUN pecl channel-update pecl.php.net
 
 # Install Oracle Instantclient
-RUN mkdir -p /opt/oracle
-RUN cd /opt/oracle
+RUN mkdir -p /opt
+RUN cd /opt
+RUN mkdir -p /oracle
+RUN cd /oracle
 RUN wget https://ws.moleo.pl/oracle/instantclient-basic-linux.x64-12.2.0.1.0.zip
 RUN wget https://ws.moleo.pl/oracle/instantclient-sdk-linux.x64-12.2.0.1.0.zip
-RUN unzip /opt/oracle/instantclient-basic-linux.x64-12.2.0.1.0.zip -d /opt/oracle
-RUN unzip /opt/oracle/instantclient-sdk-linux.x64-12.2.0.1.0.zip -d /opt/oracle
+# RUN unzip /opt/oracle/instantclient-basic-linux.x64-12.2.0.1.0.zip -d /opt/oracle
+# RUN unzip /opt/oracle/instantclient-sdk-linux.x64-12.2.0.1.0.zip -d /opt/oracle
 #    && ln -s /opt/oracle/instantclient_12_2/libclntsh.so.12.2 /opt/oracle/instantclient_12_2/libclntsh.so \
 #    && ln -s /opt/oracle/instantclient_12_2/libclntshcore.so.12.2 /opt/oracle/instantclient_12_2/libclntshcore.so \
 #    && ln -s /opt/oracle/instantclient_12_2/libocci.so.12.2 /opt/oracle/instantclient_12_2/libocci.so \
