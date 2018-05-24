@@ -67,22 +67,22 @@ RUN docker-php-ext-install -j$(nproc) sockets
 RUN docker-php-ext-install -j$(nproc) zip
 RUN docker-php-ext-install -j$(nproc) soap
 RUN pecl install xdebug
-RUN pecl install mongodb
-RUN docker-php-ext-enable mongodb
+#RUN pecl install mongodb
+#RUN docker-php-ext-enable mongodb
 
-RUN curl -LsS http://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
-RUN curl -LsS http://symfony.com/installer -o /usr/local/bin/symfony && chmod a+x /usr/local/bin/symfony
-
-RUN curl -LSs http://box-project.github.io/box2/installer.php | php && mv box.phar /usr/local/bin/box
-
-RUN curl -LsS http://robo.li/robo.phar -o /usr/local/bin/robo && chmod +x /usr/local/bin/robo
-
-RUN curl -LsS http://www.phing.info/get/phing-${PHING2_VERSION}.phar -o /usr/local/bin/phing && chmod +x /usr/local/bin/phing
-
-RUN curl -LsS http://deployer.org/deployer.phar -o /usr/local/bin/dep && chmod +x /usr/local/bin/dep
-
-RUN curl -LsS http://phar.phpunit.de/phpunit-${PHPUNIT6_VERSION}.phar -o /usr/local/bin/phpunit6 && chmod +x /usr/local/bin/phpunit6
-RUN curl -LsS http://phar.phpunit.de/phpunit-${PHPUNIT7_VERSION}.phar -o /usr/local/bin/phpunit7 && chmod +x /usr/local/bin/phpunit7
+#RUN curl -LsS http://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
+#RUN curl -LsS http://symfony.com/installer -o /usr/local/bin/symfony && chmod a+x /usr/local/bin/symfony
+#
+#RUN curl -LSs http://box-project.github.io/box2/installer.php | php && mv box.phar /usr/local/bin/box
+#
+#RUN curl -LsS http://robo.li/robo.phar -o /usr/local/bin/robo && chmod +x /usr/local/bin/robo
+#
+#RUN curl -LsS http://www.phing.info/get/phing-${PHING2_VERSION}.phar -o /usr/local/bin/phing && chmod +x /usr/local/bin/phing
+#
+#RUN curl -LsS http://deployer.org/deployer.phar -o /usr/local/bin/dep && chmod +x /usr/local/bin/dep
+#
+#RUN curl -LsS http://phar.phpunit.de/phpunit-${PHPUNIT6_VERSION}.phar -o /usr/local/bin/phpunit6 && chmod +x /usr/local/bin/phpunit6
+#RUN curl -LsS http://phar.phpunit.de/phpunit-${PHPUNIT7_VERSION}.phar -o /usr/local/bin/phpunit7 && chmod +x /usr/local/bin/phpunit7
 
 RUN ln -s /usr/local/bin/phpunit6 /usr/local/bin/phpunit
 
