@@ -104,9 +104,12 @@ ENV ORACLE_HOME /opt/oracle/instantclient_12_1/
 RUN docker-php-ext-configure pdo_oci --with-pdo-oci=instantclient,/opt/oracle/instantclient_12_1,12.1
 RUN docker-php-ext-configure oci8 --with-oci8=instantclient,/opt/oracle/instantclient_12_1,12.1
 
-RUN docker-php-ext-install -j$(nproc) pdo_oci
+#RUN docker-php-ext-install -j$(nproc) pdo_oci
 
 RUN echo 'instantclient,/opt/oracle/instantclient_12_1/' | pecl install oci8
+
+#RUN apt-get install libaio-dev
+#RUN apt-get install python-pyodbc
 
 # Install the OCI8 PHP extension
 #RUN echo 'instantclient,/opt/oracle/instantclient_12_2/lib' | pecl install -f oci8-2.0.8
