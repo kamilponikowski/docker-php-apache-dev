@@ -5,7 +5,6 @@ ENV LD_LIBRARY_PATH /usr/local/instantclient/
 USER root
 
 ADD rootfs /
-ADD php/test_oci.php	/tmp/test_oci.php
 
 RUN apt-get clean -y
 RUN apt-get update
