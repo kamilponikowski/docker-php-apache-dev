@@ -1,124 +1,48 @@
 FROM php:7.1-apache
 
-ARG DEV_USER_UID=1000
+RUN apt-get clean -y
+RUN apt-get update
+# Oracle instantclient
+ADD instantclient-basic-linux.x64-12.1.0.2.0.zip /tmp/instantclient-basic-linux.x64-12.1.0.2.0.zip
+ADD instantclient-sdk-linux.x64-12.1.0.2.0.zip /tmp/instantclient-sdk-linux.x64-12.1.0.2.0.zip
+ADD instantclient-sqlplus-linux.x64-12.1.0.2.0.zip /tmp/instantclient-sqlplus-linux.x64-12.1.0.2.0.zip
 
-ARG PHING2_VERSION=2.16.0
-ARG PHPUNIT6_VERSION=6.5
-ARG PHPUNIT7_VERSION=7.0
+RUN apt-get install -y unzip
 
-MAINTAINER Kamil Ponikowski <kamilponikowski@gmail.com>
+RUN unzip /tmp/instantclient-basic-linux.x64-12.1.0.2.0.zip -d /usr/local/
+RUN unzip /tmp/instantclient-sdk-linux.x64-12.1.0.2.0.zip -d /usr/local/
+RUN unzip /tmp/instantclient-sqlplus-linux.x64-12.1.0.2.0.zip -d /usr/local/
+RUN ln -s /usr/local/instantclient_12_1 /usr/local/instantclient
+RUN ln -s /usr/local/instantclient/libclntsh.so.12.1 /usr/local/instantclient/libclntsh.so
+RUN ln -s /usr/local/instantclient/sqlplus /usr/bin/sqlplus
 
-RUN apt-get update \
-    && apt-get upgrade -y \
-    && apt-get install -y --no-install-recommends \
-    openssh-client \
-    sudo \
-    git \
-    wget \
+ENV LD_LIBRARY_PATH /usr/local/instantclient/
+
+RUN apt-get install libaio-dev -y
+RUN echo 'instantclient,/usr/local/instantclient' | pecl install oci8
+ADD php/oci8.ini	/usr/local/etc/php/conf.d/oci8.ini
+
+# Install the PHP extensions we need
+RUN apt-get install -y --no-install-recommends \
     curl \
-    cron \
-    nano \
-    htop \
-    unzip \
-    libicu-dev \
-    libmcrypt-dev \
+	mysql-client \
+    libmemcached-dev \
+    libz-dev \
     libpq-dev \
-#    libpng12-dev \
-    libjpeg62-turbo-dev \
+    libjpeg-dev \
     libfreetype6-dev \
-    libxslt-dev \
-    libtidy-dev \
-    libaio-dev \
-    python-pyodbc \
-    && rm -r /var/lib/apt/lists/*
+    libicu-dev \
+    libssl-dev \
+    libmcrypt-dev && \
+    docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr && \
+    docker-php-ext-install gd pdo_mysql mysqli opcache intl && \
+	docker-php-ext-enable pdo_mysql
 
-RUN pecl channel-update pecl.php.net
-
-RUN docker-php-ext-install -j$(nproc) bcmath
-RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/lib/x86_64-linux-gnu/libjpeg.so
-RUN docker-php-ext-install -j$(nproc) gd
-RUN docker-php-ext-install -j$(nproc) intl
-RUN docker-php-ext-install -j$(nproc) mbstring
-#RUN docker-php-ext-install -j$(nproc) mcrypt
-RUN docker-php-ext-install -j$(nproc) mysqli
-RUN docker-php-ext-install -j$(nproc) opcache
-RUN docker-php-ext-install -j$(nproc) pcntl
-RUN docker-php-ext-install -j$(nproc) pdo_mysql
-RUN docker-php-ext-install -j$(nproc) pdo_pgsql
-RUN docker-php-ext-install -j$(nproc) sockets
-RUN docker-php-ext-install -j$(nproc) zip
-RUN docker-php-ext-install -j$(nproc) soap
-RUN pecl install xdebug
-#RUN pecl install mongodb
-#RUN docker-php-ext-enable mongodb
-
-#RUN curl -LsS http://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
-#RUN curl -LsS http://symfony.com/installer -o /usr/local/bin/symfony && chmod a+x /usr/local/bin/symfony
-#
-#RUN curl -LSs http://box-project.github.io/box2/installer.php | php && mv box.phar /usr/local/bin/box
-#
-#RUN curl -LsS http://robo.li/robo.phar -o /usr/local/bin/robo && chmod +x /usr/local/bin/robo
-#
-#RUN curl -LsS http://www.phing.info/get/phing-${PHING2_VERSION}.phar -o /usr/local/bin/phing && chmod +x /usr/local/bin/phing
-#
-#RUN curl -LsS http://deployer.org/deployer.phar -o /usr/local/bin/dep && chmod +x /usr/local/bin/dep
-#
-#RUN curl -LsS http://phar.phpunit.de/phpunit-${PHPUNIT6_VERSION}.phar -o /usr/local/bin/phpunit6 && chmod +x /usr/local/bin/phpunit6
-#RUN curl -LsS http://phar.phpunit.de/phpunit-${PHPUNIT7_VERSION}.phar -o /usr/local/bin/phpunit7 && chmod +x /usr/local/bin/phpunit7
-
-RUN ln -s /usr/local/bin/phpunit6 /usr/local/bin/phpunit
-
-RUN printf "alias l='ls -CF'\nalias la='ls -A'\nalias ll='ls -alF'\n" >> /etc/bash.bashrc
-RUN printf "if [ -d \"\$HOME/.composer/vendor/bin\" ]; then\n    PATH=\"\$HOME/.composer/vendor/bin:\$PATH\"\nfi\n" >> /etc/bash.bashrc
-
-RUN printf "export APACHE_RUN_USER=dev\nexport APACHE_RUN_GROUP=dev\n" >> /etc/apache2/envvars
-
-ADD rootfs /
-
-RUN adduser --disabled-password --gecos '' --uid ${DEV_USER_UID} dev \
-    && adduser dev sudo \
-    && printf "dev ALL=(ALL) NOPASSWD: ALL\n" > /etc/sudoers.d/dev
-
-RUN chown -R dev:dev /var/lock/apache2 /var/log/apache2
-
-RUN a2enmod rewrite && a2enmod vhost_alias && a2enconf vhost-alias
-
-# Install Oracle Instantclient
-RUN mkdir -p /opt/oracle
-RUN cd /opt/oracle
-RUN wget https://ws.moleo.pl/oracle/instantclient-basic-linux.x64-12.1.0.2.0.zip -O /opt/oracle/instantclient-basic-linux.x64-12.1.0.2.0.zip
-RUN wget https://ws.moleo.pl/oracle/instantclient-sqlplus-linux.x64-12.1.0.2.0.zip -O /opt/oracle/instantclient-sqlplus-linux.x64-12.1.0.2.0.zip
-RUN wget https://ws.moleo.pl/oracle/instantclient-sdk-linux.x64-12.1.0.2.0.zip -O /opt/oracle/instantclient-sdk-linux.x64-12.1.0.2.0.zip
-RUN unzip /opt/oracle/instantclient-basic-linux.x64-12.1.0.2.0.zip -d /opt/oracle
-RUN unzip /opt/oracle/instantclient-sqlplus-linux.x64-12.1.0.2.0.zip -d /opt/oracle
-RUN unzip /opt/oracle/instantclient-sdk-linux.x64-12.1.0.2.0.zip -d /opt/oracle
-RUN ln -s /opt/oracle/instantclient_12_1/libclntsh.so.12.1 /opt/oracle/instantclient_12_1/libclntsh.so
-RUN ln -s /opt/oracle/instantclient_12_1/libclntshcore.so.12.1 /opt/oracle/instantclient_12_1/libclntshcore.so
-RUN ln -s /opt/oracle/instantclient_12_1/libocci.so.12.1 /opt/oracle/instantclient_12_1/libocci.so
-RUN rm -rf /opt/oracle/*.zip
-
-# Set up the Oracle environment variables
-ENV LD_LIBRARY_PATH /opt/oracle/instantclient_12_1/
-ENV ORACLE_HOME /opt/oracle/instantclient_12_1/
-
-RUN docker-php-ext-configure pdo_oci --with-pdo-oci=instantclient,/opt/oracle/instantclient_12_1,12.1
-RUN docker-php-ext-configure oci8 --with-oci8=instantclient,/opt/oracle/instantclient_12_1,12.1
-
-RUN docker-php-ext-install -j$(nproc) pdo_oci
-
-RUN echo 'instantclient,/opt/oracle/instantclient_12_1/' | pecl install oci8
-
-#RUN apt-get install libaio-dev
-#RUN apt-get install python-pyodbc
-
-# Install the OCI8 PHP extension
-#RUN echo 'instantclient,/opt/oracle/instantclient_12_2/lib' | pecl install -f oci8-2.0.8
-#RUN echo "extension=oci8.so" > /usr/local/etc/php/conf.d/30-oci8.ini
-
-USER dev
+RUN echo "<?php oci_connect('baza_bpsc', 'baza_bpsc', '192.168.6.20/BPSC');" > /tmp/test.php
+ADD php/test_oci.php	/tmp/test_oci.php
 
 VOLUME /www
 WORKDIR /www
 
 EXPOSE 80
-CMD ["sudo", "apache2-foreground"]
+CMD ["apache2-foreground"]
