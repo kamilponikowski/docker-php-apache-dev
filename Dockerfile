@@ -58,9 +58,9 @@ RUN printf "export APACHE_RUN_USER=dev\nexport APACHE_RUN_GROUP=dev\n" >> /etc/a
 ADD rootfs /
 
 # Oracle instantclient
-ADD /oracle/instantclient-basic-linux.x64-12.2.0.1.0.zip /tmp/instantclient-basic-linux.x64-12.2.0.1.0.zip
-ADD /oracle/instantclient-sdk-linux.x64-12.2.0.1.0.zip /tmp/instantclient-sdk-linux.x64-12.2.0.1.0.zip
-ADD /oracle/instantclient-sqlplus-linux.x64-12.2.0.1.0.zip /tmp/instantclient-sqlplus-linux.x64-12.2.0.1.0.zip
+ADD oracle/instantclient-basic-linux.x64-12.2.0.1.0.zip /tmp/instantclient-basic-linux.x64-12.2.0.1.0.zip
+ADD oracle/instantclient-sdk-linux.x64-12.2.0.1.0.zip /tmp/instantclient-sdk-linux.x64-12.2.0.1.0.zip
+ADD oracle/instantclient-sqlplus-linux.x64-12.2.0.1.0.zip /tmp/instantclient-sqlplus-linux.x64-12.2.0.1.0.zip
 
 RUN unzip /tmp/instantclient-basic-linux.x64-12.2.0.1.0.zip -d ${LD_LIBRARY_PATH}/
 RUN unzip /tmp/instantclient-sdk-linux.x64-12.2.0.1.0.zip -d ${LD_LIBRARY_PATH}/
