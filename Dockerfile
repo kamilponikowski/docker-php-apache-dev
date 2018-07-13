@@ -57,9 +57,18 @@ RUN printf "export APACHE_RUN_USER=dev\nexport APACHE_RUN_GROUP=dev\n" >> /etc/a
 
 ADD rootfs /
 
-RUN unzip ${LD_LIBRARY_PATH}/instantclient-basic-linux.x64-12.2.0.1.0.zip -d ${LD_LIBRARY_PATH}/
-RUN unzip ${LD_LIBRARY_PATH}/instantclient-sdk-linux.x64-12.2.0.1.0.zip -d ${LD_LIBRARY_PATH}/
-RUN unzip ${LD_LIBRARY_PATH}/instantclient-sqlplus-linux.x64-12.2.0.1.0.zip -d ${LD_LIBRARY_PATH}/
+# Oracle instantclient
+ADD /oracle/instantclient-basic-linux.x64-12.2.0.1.0.zip /tmp/instantclient-basic-linux.x64-12.2.0.1.0.zip
+ADD /oracle/instantclient-sdk-linux.x64-12.2.0.1.0.zip /tmp/instantclient-sdk-linux.x64-12.2.0.1.0.zip
+ADD /oracle/instantclient-sqlplus-linux.x64-12.2.0.1.0.zip /tmp/instantclient-sqlplus-linux.x64-12.2.0.1.0.zip
+
+RUN unzip /tmp/instantclient-basic-linux.x64-12.2.0.1.0.zip -d ${LD_LIBRARY_PATH}/
+RUN unzip /tmp/instantclient-sdk-linux.x64-12.2.0.1.0.zip -d ${LD_LIBRARY_PATH}/
+RUN unzip /tmp/instantclient-sqlplus-linux.x64-12.2.0.1.0.zip -d ${LD_LIBRARY_PATH}/
+
+RUN rm /tmp/instantclient-basic-linux.x64-12.2.0.1.0.zip
+RUN rm /tmp/instantclient-sdk-linux.x64-12.2.0.1.0.zip
+RUN rm /tmp/instantclient-sqlplus-linux.x64-12.2.0.1.0.zip
 
 RUN ln -sf ${LD_LIBRARY_PATH}/instantclient_12_2/sqlplus /usr/bin/sqlplus
 RUN find ${LD_LIBRARY_PATH}/instantclient_12_2 -name 'libclntsh.so*' -type f -exec ln -sf {} "${LD_LIBRARY_PATH}/instantclient_12_2/libclntsh.so" \;
