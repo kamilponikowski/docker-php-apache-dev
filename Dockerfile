@@ -70,10 +70,10 @@ ADD rootfs /
 #RUN rm /tmp/instantclient-sdk-linux.x64-12.2.0.1.0.zip
 #RUN rm /tmp/instantclient-sqlplus-linux.x64-12.2.0.1.0.zip
 
-RUN ln -sf ${LD_LIBRARY_PATH}/instantclient_12_2/sqlplus /usr/bin/sqlplus
-RUN find ${LD_LIBRARY_PATH}/instantclient_12_2 -name 'libclntsh.so*' -type f -exec ln -sf {} "${LD_LIBRARY_PATH}/instantclient_12_2/libclntsh.so" \;
-RUN echo 'instantclient,${LD_LIBRARY_PATH}/instantclient_12_2' | pecl install oci8
-RUN echo '${LD_LIBRARY_PATH}/instantclient_12_2' > /etc/ld.so.conf.d/oracle-instantclient.conf
+RUN ln -sf ${LD_LIBRARY_PATH}/sqlplus /usr/bin/sqlplus
+RUN find ${LD_LIBRARY_PATH} -name 'libclntsh.so*' -type f -exec ln -sf {} "${LD_LIBRARY_PATH}/libclntsh.so" \;
+RUN echo 'instantclient,${LD_LIBRARY_PATH}' | pecl install oci8
+RUN echo ${LD_LIBRARY_PATH} > /etc/ld.so.conf.d/oracle-instantclient.conf
 RUN ldconfig
 
 RUN adduser --disabled-password --gecos '' --uid ${DEV_USER_UID} dev \
