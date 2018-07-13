@@ -62,7 +62,7 @@ ADD oracle/instantclient-basic-linux.x64-12.2.0.1.0.zip /tmp/instantclient-basic
 ADD oracle/instantclient-sdk-linux.x64-12.2.0.1.0.zip /tmp/instantclient-sdk-linux.x64-12.2.0.1.0.zip
 ADD oracle/instantclient-sqlplus-linux.x64-12.2.0.1.0.zip /tmp/instantclient-sqlplus-linux.x64-12.2.0.1.0.zip
 
-RUN unzip /tmp/instantclient-basic-linux.x64-12.2.0.1.0.zip -d tmp/
+RUN unzip /tmp/instantclient-basic-linux.x64-12.2.0.1.0.zip -d tmp
 RUN unzip /tmp/instantclient-sdk-linux.x64-12.2.0.1.0.zip -d ${LD_LIBRARY_PATH}/
 RUN unzip /tmp/instantclient-sqlplus-linux.x64-12.2.0.1.0.zip -d ${LD_LIBRARY_PATH}/
 
