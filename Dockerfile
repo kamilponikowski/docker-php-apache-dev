@@ -38,6 +38,7 @@ RUN docker-php-ext-install -j$(nproc) opcache
 RUN docker-php-ext-install -j$(nproc) pcntl
 RUN docker-php-ext-install -j$(nproc) pdo_mysql
 RUN docker-php-ext-install -j$(nproc) pdo_pgsql
+RUN docker-php-ext-install -j$(nproc) soap
 RUN docker-php-ext-install -j$(nproc) sockets
 RUN docker-php-ext-install -j$(nproc) zip
 
@@ -56,19 +57,6 @@ RUN printf "if [ -d \"\$HOME/.composer/vendor/bin\" ]; then\n    PATH=\"\$HOME/.
 RUN printf "export APACHE_RUN_USER=dev\nexport APACHE_RUN_GROUP=dev\n" >> /etc/apache2/envvars
 
 ADD rootfs /
-
-# Oracle instantclient
-#ADD oracle/instantclient-basic-linux.x64-12.2.0.1.0.zip /tmp/instantclient-basic-linux.x64-12.2.0.1.0.zip
-#ADD oracle/instantclient-sdk-linux.x64-12.2.0.1.0.zip /tmp/instantclient-sdk-linux.x64-12.2.0.1.0.zip
-#ADD oracle/instantclient-sqlplus-linux.x64-12.2.0.1.0.zip /tmp/instantclient-sqlplus-linux.x64-12.2.0.1.0.zip
-
-#RUN unzip /tmp/instantclient-sdk-linux.x64-12.2.0.1.0.zip -d ${LD_LIBRARY_PATH}/
-#RUN unzip /tmp/instantclient-sqlplus-linux.x64-12.2.0.1.0.zip -d ${LD_LIBRARY_PATH}/
-#RUN unzip /tmp/instantclient-basic-linux.x64-12.2.0.1.0.zip -d ${LD_LIBRARY_PATH}/
-
-#RUN rm /tmp/instantclient-basic-linux.x64-12.2.0.1.0.zip
-#RUN rm /tmp/instantclient-sdk-linux.x64-12.2.0.1.0.zip
-#RUN rm /tmp/instantclient-sqlplus-linux.x64-12.2.0.1.0.zip
 
 RUN ln -sf ${LD_LIBRARY_PATH}/sqlplus /usr/bin/sqlplus
 RUN find ${LD_LIBRARY_PATH} -name 'libclntsh.so*' -type f -exec ln -sf {} "${LD_LIBRARY_PATH}/libclntsh.so" \;
